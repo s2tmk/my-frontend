@@ -26,14 +26,23 @@ function App() {
       });
   });
 
-  const { data, isLoading } = useQuery({
+  const { data: helloMessage, isLoading: isLoadingHelloApi } = useQuery({
     queryKey: ["message"],
     queryFn: () => axiosInstance.get("/api/hello").then((res) => res.data),
   });
 
+  const { data: userPoint, isLoading: isLoadingNotionApi } = useQuery({
+    queryKey: ["point"],
+    queryFn: () =>
+      axiosInstance.get("/api/notion?userId=tomoki").then((res) => res.data),
+  });
+
   return (
     <>
-      {isLoading ? "Loading..." : data}
+      {isLoadingHelloApi ? "Loading..." : helloMessage}
+      {isLoadingNotionApi
+        ? "Loading..."
+        : `${userPoint?.userId ?? "anonymous"}: ${userPoint?.point ?? 0}`}
       {message && <p>{message}</p>}
       {error && (
         <p>
