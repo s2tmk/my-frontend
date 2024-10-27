@@ -9,9 +9,9 @@ const axiosInstance = axios.create({
 });
 
 function App() {
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
-  const [token, setToken] = useState("");
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
     liff
@@ -19,12 +19,15 @@ function App() {
         liffId: import.meta.env.VITE_APP_LIFF_ID,
       })
       .then(() => {
-        setMessage("LIFF init succeeded.");
-        if (liff.isLoggedIn()) {
-          setToken(liff.getIDToken()!);
-        } else {
+        console.log("LIFF init succeeded.");
+        if (!liff.isLoggedIn()) {
+          console.log("LINE is not logged in.");
           liff.login();
         }
+        console.log("LINE is logged in.");
+        const token = liff.getIDToken();
+        console.log("LINE ID token:", token);
+        setToken(token);
       })
       .catch((e: Error) => {
         setMessage("LIFF init failed.");
