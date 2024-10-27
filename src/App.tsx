@@ -11,6 +11,7 @@ const axiosInstance = axios.create({
 function App() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [token, setToken] = useState("");
 
   useEffect(() => {
     liff
@@ -19,6 +20,11 @@ function App() {
       })
       .then(() => {
         setMessage("LIFF init succeeded.");
+        if (liff.isLoggedIn()) {
+          setToken(liff.getIDToken()!);
+        } else {
+          liff.login();
+        }
       })
       .catch((e: Error) => {
         setMessage("LIFF init failed.");
@@ -32,9 +38,10 @@ function App() {
   });
 
   const { data: userPoint, isLoading: isLoadingNotionApi } = useQuery({
-    queryKey: ["point"],
+    queryKey: ["point", token],
     queryFn: () =>
-      axiosInstance.get("/api/notion?userId=tomoki").then((res) => res.data),
+      axiosInstance.get("/api/notion?token=" + token).then((res) => res.data),
+    enabled: !!token,
   });
 
   return (
